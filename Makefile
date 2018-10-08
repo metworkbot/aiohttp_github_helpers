@@ -9,3 +9,9 @@ install:
 
 clean:
 	rm -Rf *.egg-info
+	rm -Rf aiohttp_github_helpers/__pycache__
+	rm -Rf tests/__pycache__
+
+test:
+	flake8 .
+	pytest
