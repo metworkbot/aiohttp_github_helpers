@@ -8,32 +8,32 @@ GITHUB_CHECK_SIGNATURE_SECRET = b'CHANGEME'
 GITHUB_ROOT = "https://api.github.com"
 
 
-@web.middleware
-async def github_check_signature(request, handler):
-    """Check the GitHub signature or return an HTTP/400.
+def github_check_signature_middleware_factory(signature_secret):
+    """Build and return an aiohttp middleware to check the GitHub signature.
 
-    This is an aiohttp middleware. We check the GitHub hook signature
-    (see corresponding doc at github on hook secrets). The secret must be
-    available in GITHUB_CHECK_SIGNATURE_SECRET global variable.
+    We check the GitHub hook signature
+    (see corresponding doc at github on hook secrets). If it doesn't match to
+    the given signature_secret, we return a HTTP/400 error.
 
     Args:
-        request: aiohttp.web.Request object corresponding to the incoming
-            http request from the client.
-        handler: aiohttp handler (see middlewares documentation).
+        signature_secret (bytes): the signature secret (as bytes).
 
     Returns:
-        aiohttp Response (see middlewares documentation).
+        aiohttp middlerware (see aiohttp middlewares documentation).
 
     """
-    if 'X-Hub-Signature' not in request.headers:
-        return web.Response(status=400, body=b"no X-Hub-Signature header")
-    x_hub_signature = request.headers.get('X-Hub-Signature')
-    body = await request.read()
-    sign = hmac.new(GITHUB_CHECK_SIGNATURE_SECRET, body, 'sha1')
-    signature = "sha1=" + sign.hexdigest()
-    if signature != x_hub_signature:
-        return web.Response(status=400, body=b"bad signature")
-    return handler(request)
+    @web.middleware
+    async def github_check_signature(request, handler):
+        if 'X-Hub-Signature' not in request.headers:
+            return web.Response(status=400, body=b"no X-Hub-Signature header")
+        x_hub_signature = request.headers.get('X-Hub-Signature')
+        body = await request.read()
+        sign = hmac.new(signature_secret, body, 'sha1')
+        signature = "sha1=" + sign.hexdigest()
+        if signature != x_hub_signature:
+            return web.Response(status=400, body=b"bad signature")
+        return await handler(request)
+    return github_check_signature
 
 
 @web.middleware
@@ -56,7 +56,7 @@ async def github_check_github_event(request, handler):
     if 'X-GitHub-Event' not in request.headers:
         return web.Response(status=400, body=b"no X-GitHub-Event header")
     request['github_event'] = request.headers.get('X-GitHub-Event')
-    return handler(request)
+    return await handler(request)
 
 
 async def github_add_labels_on_issue(client_session, owner, repo, issue_number,
@@ -305,9 +305,11 @@ async def github_create_status(client_session, owner, repo, sha, status_state,
     LOGGER.info("creating status %s (context: %s) for url: %s" %
                 (status_state, status_context, url))
     async with client_session.post(url, json=posted_body) as r:
-        if r.status != 200:
+        if r.status != 201:
             LOGGER.warning("can't create status %s (context: %s) "
-                           "for url: %s" % (status_state, status_context, url))
+                           "for url: %s (status: %i)" % (status_state,
+                                                         status_context,
+                                                         url, r.status))
             return False
         try:
             await r.json()
@@ -339,8 +341,9 @@ async def github_post_comment(client_session, owner, repo, issue_number,
                                                  issue_number)
     LOGGER.info("posting comment to %s..." % url)
     async with client_session.post(url, json=posted_body) as r:
-        if r.status != 200:
-            LOGGER.warning("can't create comment on %s" % url)
+        if r.status != 201:
+            LOGGER.warning("can't create comment on %s (status: %i)" %
+                           (url, r.status))
             return False
         try:
             await r.json()
