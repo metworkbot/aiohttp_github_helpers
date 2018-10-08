@@ -1,0 +1,12 @@
+pipeline:
+  build:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - python setup.py install
+      - pip install -r dev-requirements.txt
+      - pytest
+
+matrix:
+  PYTHON_VERSION:
+    - 3.5-jessie
+    - 3.6-jessie
