@@ -64,7 +64,7 @@ async def github_add_labels_on_issue(client_session, owner, repo, issue_number,
     """
     Add somes labels to a github issue.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -98,7 +98,7 @@ async def github_get_labels_on_issue(client_session, owner, repo,
     """
     Get the list of labels of a github issue.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -130,7 +130,7 @@ async def github_delete_label_on_issue(client_session, owner, repo,
     """
     Delete a label from a github issue.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -166,7 +166,7 @@ async def github_delete_labels_on_issue_with_globs(client_session, owner, repo,
     To be deleted a label must match to the glob_include pattern AND NOT match
     to the glob_exclude pattern.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -206,7 +206,7 @@ async def github_conditional_add_label_on_issue(client_session, owner, repo,
     """
     Add label to a github issue if none on current labels match the given glob.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -240,7 +240,7 @@ async def github_replace_labels_with(client_session, owner, repo, issue_number,
     Note: if the new_label to add is already present, it is not removed then
     added another time.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -280,7 +280,7 @@ async def github_create_status(client_session, owner, repo, sha, status_state,
 
     see https://developer.github.com/v3/repos/statuses/#create-a-status
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -325,7 +325,7 @@ async def github_post_comment(client_session, owner, repo, issue_number,
     """
     Post a comment to a github issue.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -358,7 +358,7 @@ async def github_get_pr_commit_messages_list(client_session, owner, repo,
     """
     Get the list of commit messages for a given pull-request.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -388,7 +388,7 @@ async def github_get_status(client_session, owner, repo, ref,
     """
     Get the combined status for a given ref.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
@@ -427,7 +427,7 @@ async def github_get_open_prs_by_sha(client_session, owner, repo, sha,
     """
     Get the list of pr where head is the given sha.
 
-    Params:
+    Args:
         client_session: aiohttp ClientSession.
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
