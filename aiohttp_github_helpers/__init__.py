@@ -410,3 +410,34 @@ async def github_get_status(client_session, owner, repo, ref):
             LOGGER.warning("can't get combined status on %s" % url)
             return None
     return reply['state']
+
+
+async def github_get_open_prs_by_sha(client_session, owner, repo, sha,
+                                     state='open'):
+    """
+    Get the list of pr where head is the given sha.
+
+    Params:
+        client_session: aiohttp ClientSession.
+        owner: owner of the repository at github.
+        repo: repository name at github (without owner part).
+        sha (string): the SHA to search.
+        state (string): either open, closed, all to filter by pr state.
+
+    Returns:
+        pr numbers (list): pr numbers as list of int
+
+    """
+    url = "%s/repos/%s/%s/pulls" % (GITHUB_ROOT, owner, repo)
+    params = {"state": state}
+    async with client_session.get(url, params=params) as r:
+        if r.status != 200:
+            LOGGER.warning("can't get pr list "
+                           "on %s (status: %i)" % (r.url, r.status))
+            return None
+        try:
+            reply = await r.json()
+        except Exception:
+            LOGGER.warning("can't get pr list on %s" % r.url)
+            return None
+    return [x['number'] for x in reply if x['head']['sha'] == sha]

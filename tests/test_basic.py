@@ -36,3 +36,14 @@ async def test_github_get_statuses():
         status = await h.github_get_status(client_session, TEST_OWNER,
                                            TEST_REPO, ref)
         assert status == 'failure'
+
+
+@pytest.mark.asyncio
+async def test_github_get_open_prs_by_sha():
+    sha = "129ae457d5cd404ec76ab51ae70dbc137b4aae6d"
+    async with ClientSession() as client_session:
+        prs = await h.github_get_open_prs_by_sha(client_session, TEST_OWNER,
+                                                 TEST_REPO, sha,
+                                                 state='all')
+        assert len(prs) == 1
+        assert prs[0] == 61
