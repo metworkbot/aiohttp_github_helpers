@@ -381,3 +381,32 @@ async def github_get_pr_commit_messages_list(client_session, owner, repo,
             LOGGER.warning("can't get commits list on %s" % url)
             return None
     return [x['commit']['message'] for x in reply]
+
+
+async def github_get_status(client_session, owner, repo, ref):
+    """
+    Get the combined status for a given ref.
+
+    Params:
+        client_session: aiohttp ClientSession.
+        owner: owner of the repository at github.
+        repo: repository name at github (without owner part).
+        ref (string): the ref can be a SHA, a branch name, or a tag name.
+
+    Returns:
+        combined state (string): combined state (failure, success...)
+
+    """
+    url = "%s/repos/%s/%s/commits/%s/status" % (GITHUB_ROOT, owner, repo,
+                                                ref)
+    async with client_session.get(url) as r:
+        if r.status != 200:
+            LOGGER.warning("can't get combined status "
+                           "on %s (status: %i)" % (url, r.status))
+            return None
+        try:
+            reply = await r.json()
+        except Exception:
+            LOGGER.warning("can't get combined status on %s" % url)
+            return None
+    return reply['state']

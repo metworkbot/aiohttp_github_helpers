@@ -14,8 +14,8 @@ async def test_github_get_labels_on_issue():
         labels = await h.github_get_labels_on_issue(client_session, TEST_OWNER,
                                                     TEST_REPO, 38)
         assert len(labels) == 2
-        assert sorted(labels)[0] == 'Status: Closed'
-        assert sorted(labels)[1] == 'Type: Mixed'
+        assert sorted(labels)[0] == 'Priority: Low'
+        assert sorted(labels)[1] == 'Status: Closed'
 
 
 @pytest.mark.asyncio
@@ -27,3 +27,12 @@ async def test_github_get_pr_commit_messages_list():
                                                               58)
         assert len(messages) == 1
         assert messages[0] == 'Update README.md'
+
+
+@pytest.mark.asyncio
+async def test_github_get_statuses():
+    ref = "129ae457d5cd404ec76ab51ae70dbc137b4aae6d"
+    async with ClientSession() as client_session:
+        status = await h.github_get_status(client_session, TEST_OWNER,
+                                           TEST_REPO, ref)
+        assert status == 'failure'
