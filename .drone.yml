@@ -5,8 +5,23 @@ pipeline:
       - python setup.py install
       - pip install -r dev-requirements.txt
       - pytest
+  doc:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - python setup.py install
+      - pip install -r dev-requirements.txt
+      - make html
+      - rm -Rf /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers
+      - mkdir -p /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers
+      - cp -Rf doc/_build/* /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers/
+    when:
+      event: push
+      branch: [ master, pci_* ]
+    volumes:
+      - /pub:/pub
 
 matrix:
   PYTHON_VERSION:
     - 3.5-jessie
-    - 3.6-jessie
+
+branches: [ master, pci_*, ci_* ]
