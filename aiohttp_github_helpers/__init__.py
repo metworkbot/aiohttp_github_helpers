@@ -383,7 +383,8 @@ async def github_get_pr_commit_messages_list(client_session, owner, repo,
     return [x['commit']['message'] for x in reply]
 
 
-async def github_get_status(client_session, owner, repo, ref):
+async def github_get_status(client_session, owner, repo, ref,
+                            ignore_context_globs=[]):
     """
     Get the combined status for a given ref.
 
@@ -392,6 +393,8 @@ async def github_get_status(client_session, owner, repo, ref):
         owner: owner of the repository at github.
         repo: repository name at github (without owner part).
         ref (string): the ref can be a SHA, a branch name, or a tag name.
+        ignore_context_globs (list): list of context to ignore (globs as
+            defined by fnmatch module).
 
     Returns:
         combined state (string): combined state (failure, success...)
@@ -409,7 +412,14 @@ async def github_get_status(client_session, owner, repo, ref):
         except Exception:
             LOGGER.warning("can't get combined status on %s" % url)
             return None
-    return reply['state']
+        statuses = [x['state'] for x in reply['statuses']
+                    if all([not fnmatch.fnmatch(x['context'], y)
+                            for y in ignore_context_globs])]
+    if any([x in ('failure', 'error') for x in statuses]):
+        return 'failure'
+    if all([(x == 'success') for x in statuses]):
+        return 'success'
+    return 'pending'
 
 
 async def github_get_open_prs_by_sha(client_session, owner, repo, sha,
