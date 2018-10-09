@@ -3,3 +3,5 @@
 flake8
 pytest
 pytest-asyncio
+Sphinx
+sphinx-rtd-theme

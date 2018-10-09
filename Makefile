@@ -1,3 +1,5 @@
+.PHONY: doc all develop install clean test
+
 all:
 	python setup.py build
 
@@ -15,3 +17,6 @@ clean:
 test:
 	flake8 .
 	pytest
+
+doc:
+	cd doc && make html
