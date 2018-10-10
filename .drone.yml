@@ -13,7 +13,7 @@ pipeline:
       - make doc
       - rm -Rf /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers
       - mkdir -p /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers
-      - cp -Rf doc/_build/* /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers/
+      - cp -Rf doc/_build/html/* /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers/
     when:
       event: push
       branch: [ master, pci_* ]
