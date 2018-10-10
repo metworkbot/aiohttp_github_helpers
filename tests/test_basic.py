@@ -1,6 +1,6 @@
 from aiohttp import ClientSession
-import pytest
-import pytest_asyncio.plugin
+import pytest  # noqa: F401
+import pytest_asyncio.plugin  # noqa: F401
 
 import aiohttp_github_helpers as h
 
