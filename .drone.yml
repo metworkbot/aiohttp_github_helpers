@@ -4,7 +4,7 @@ pipeline:
     commands:
       - python setup.py install
       - pip install -r dev-requirements.txt
-      - pytest
+      - make test
   doc:
     image: python:${PYTHON_VERSION}
     commands:
