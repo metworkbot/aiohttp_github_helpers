@@ -68,3 +68,13 @@ async def test_github_get_org_repos_by_topic():
                                                       ["metwork"],
                                                       ["metwork"])
         assert len(repos) == 0
+
+
+@pytest.mark.asyncio
+async def test_github_get_latest_commit():
+    async with ClientSession() as client_session:
+        (sha, age) = await h.github_get_latest_commit(client_session,
+                                                      TEST_OWNER, TEST_REPO,
+                                                      "master")
+        assert len(sha) == 40
+        assert age > 1

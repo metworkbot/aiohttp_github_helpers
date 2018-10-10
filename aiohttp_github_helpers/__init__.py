@@ -1,6 +1,9 @@
 import logging
 import hmac
 import fnmatch
+import datetime
+import dateutil.parser
+import pytz
 from aiohttp import web
 
 LOGGER = logging.getLogger("aiohttp_github_helpers")
@@ -503,3 +506,39 @@ async def github_get_open_prs_by_sha(client_session, owner, repo, sha,
             LOGGER.warning("can't get pr list on %s" % r.url)
             return None
     return [x['number'] for x in reply if x['head']['sha'] == sha]
+
+
+async def github_get_latest_commit(client_session, owner, repo, branch,
+                                   timezone="Europe/Paris"):
+    """
+    Get the latest commit for a particular branch on a repo.
+
+    Args:
+        client_session: aiohttp ClientSession.
+        owner: owner of the repository at github.
+        repo: repository name at github (without owner part).
+        branch (string): the branch name.
+        timezone (string): the current timezone.
+
+    Returns:
+        latest commit as a tuple: ("sha", age_in_seconds) or None if problem.
+
+    """
+    url = "%s/repos/%s/%s/commits/%s" % (GITHUB_ROOT, owner, repo, branch)
+    async with client_session.get(url) as r:
+        if r.status != 200:
+            LOGGER.warning("can't get the latest commit "
+                           "on %s (status: %i)" % (r.url, r.status))
+            return None
+        try:
+            reply = await r.json()
+        except Exception:
+            LOGGER.warning("can't get the laster commit on %s" % r.url)
+            return None
+    try:
+        d1 = dateutil.parser.parse(reply['commit']['committer']['date'])
+        d2 = datetime.datetime.now(pytz.timezone(timezone))
+        return (reply['sha'], (d2 - d1).total_seconds())
+    except Exception:
+        LOGGER.warning("can't get sha or compute age for url: %s" % url)
+        return None
