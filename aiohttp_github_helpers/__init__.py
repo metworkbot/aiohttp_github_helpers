@@ -422,6 +422,58 @@ async def github_get_status(client_session, owner, repo, ref,
     return 'pending'
 
 
+async def github_get_org_repos_by_topic(client_session, org,
+                                        topics_to_include=None,
+                                        topics_to_excludes=[]):
+    """
+    Get the repo names of an organization by filtering by topics.
+
+    Args:
+        client_session: aiohttp ClientSession.
+        org: organization name
+        topics_to_include (list): list of topics (AND) each repo must have
+            (if None, no filtering).
+        topics_to_exlude (list): list of topics (OR) each repo must not have
+            to be in result.
+
+    Returns:
+        repo names (list): list or repo names.
+
+    """
+    url = "%s/orgs/%s/repos" % (GITHUB_ROOT, org)
+    headers = {
+        "accept": "application/vnd.github.mercy-preview+json"
+    }
+    async with client_session.get(url, headers=headers) as r:
+        if r.status != 200:
+            LOGGER.warning("can't get repos list "
+                           "on %s (status: %i)" % (r.url, r.status))
+            return None
+        try:
+            reply = await r.json()
+        except Exception:
+            LOGGER.warning("can't get repos list on %s" % r.url)
+            return None
+    output = []
+    for repo in reply:
+        selected_repo = True
+        topics = repo['topics']
+        for topic in topics:
+            if topic in topics_to_excludes:
+                selected_repo = False
+                break
+        if not selected_repo:
+            break
+        if topics_to_include is not None:
+            for topic in topics_to_include:
+                if topic not in topics:
+                    selected_repo = False
+                    break
+        if selected_repo:
+            output.append(repo['name'])
+    return output
+
+
 async def github_get_open_prs_by_sha(client_session, owner, repo, sha,
                                      state='open'):
     """

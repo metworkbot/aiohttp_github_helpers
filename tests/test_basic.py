@@ -47,3 +47,24 @@ async def test_github_get_open_prs_by_sha():
                                                  state='all')
         assert len(prs) == 1
         assert prs[0] == 61
+
+
+@pytest.mark.asyncio
+async def test_github_get_org_repos_by_topic():
+    async with ClientSession() as client_session:
+        repos = await h.github_get_org_repos_by_topic(client_session,
+                                                      TEST_OWNER)
+        assert len(repos) > 5
+        repos = await h.github_get_org_repos_by_topic(client_session,
+                                                      TEST_OWNER,
+                                                      ["metwork"])
+        assert len(repos) > 0
+        repos = await h.github_get_org_repos_by_topic(client_session,
+                                                      TEST_OWNER,
+                                                      ["not_found"])
+        assert len(repos) == 0
+        repos = await h.github_get_org_repos_by_topic(client_session,
+                                                      TEST_OWNER,
+                                                      ["metwork"],
+                                                      ["metwork"])
+        assert len(repos) == 0
