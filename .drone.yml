@@ -10,7 +10,7 @@ pipeline:
     commands:
       - python setup.py install
       - pip install -r dev-requirements.txt
-      - make html
+      - make doc
       - rm -Rf /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers
       - mkdir -p /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers
       - cp -Rf doc/_build/* /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/aiohttp_helpers/
