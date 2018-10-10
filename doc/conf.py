@@ -133,7 +133,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'aiohttp_github_helpers.tex', 'aiohttp\\_github\\_helpers Documentation',
+    (master_doc, 'aiohttp_github_helpers.tex',
+     'aiohttp\\_github\\_helpers Documentation',
      'Fabien MARTY', 'manual'),
 ]
 
@@ -143,7 +144,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'aiohttp_github_helpers', 'aiohttp_github_helpers Documentation',
+    (master_doc, 'aiohttp_github_helpers',
+     'aiohttp_github_helpers Documentation',
      [author], 1)
 ]
 
@@ -154,7 +156,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'aiohttp_github_helpers', 'aiohttp_github_helpers Documentation',
+    (master_doc, 'aiohttp_github_helpers',
+     'aiohttp_github_helpers Documentation',
      author, 'aiohttp_github_helpers', 'One line description of project.',
      'Miscellaneous'),
 ]
