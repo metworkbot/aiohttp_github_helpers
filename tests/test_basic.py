@@ -78,3 +78,12 @@ async def test_github_get_latest_commit():
                                                       "master")
         assert len(sha) == 40
         assert age > 1
+
+
+@pytest.mark.asyncio
+async def test_github_get_repo_topics():
+    async with ClientSession() as client_session:
+        topics = await h.github_get_repo_topics(client_session,
+                                                TEST_OWNER, TEST_REPO)
+        assert len(topics) > 1
+        assert "testrepo" in topics

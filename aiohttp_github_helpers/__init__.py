@@ -425,6 +425,37 @@ async def github_get_status(client_session, owner, repo, ref,
     return 'pending'
 
 
+async def github_get_repo_topics(client_session, owner, repo):
+    """
+    Get the topics of a repository.
+
+    Args:
+        client_session: aiohttp ClientSession.
+        owner: owner of the repository at github.
+        repo: repository name at github (without owner part).
+
+    Returns:
+        topics (list): list of repo topics.
+
+    """
+    url = "%s/repos/%s/%s" % (GITHUB_ROOT, owner, repo)
+    headers = {
+        "accept": "application/vnd.github.mercy-preview+json"
+    }
+    LOGGER.warning("url = %s" % url)
+    async with client_session.get(url, headers=headers) as r:
+        if r.status != 200:
+            LOGGER.warning("can't get repo "
+                           "on %s (status: %i)" % (r.url, r.status))
+            return None
+        try:
+            reply = await r.json()
+            return reply['topics']
+        except Exception:
+            LOGGER.warning("can't get repo on %s" % r.url)
+            return None
+
+
 async def github_get_org_repos_by_topic(client_session, org,
                                         topics_to_include=None,
                                         topics_to_excludes=[]):
