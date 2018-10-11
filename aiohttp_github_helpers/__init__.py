@@ -503,7 +503,7 @@ async def github_get_org_repos_by_topic(client_session, org,
                 selected_repo = False
                 break
         if not selected_repo:
-            break
+            continue
         if topics_to_include is not None:
             for topic in topics_to_include:
                 if topic not in topics:
