@@ -374,7 +374,10 @@ async def github_get_pr_commit_messages_list(client_session, owner, repo,
     """
     url = "%s/repos/%s/%s/pulls/%i/commits" % (GITHUB_ROOT, owner, repo,
                                                pr_number)
-    async with client_session.get(url) as r:
+    params = {
+        "per_page": "100"
+    }
+    async with client_session.get(url, params=params) as r:
         if r.status != 200:
             LOGGER.warning("can't get commits list on %s" % url)
             return None
@@ -478,7 +481,10 @@ async def github_get_org_repos_by_topic(client_session, org,
     headers = {
         "accept": "application/vnd.github.mercy-preview+json"
     }
-    async with client_session.get(url, headers=headers) as r:
+    params = {
+        "per_page": "100"
+    }
+    async with client_session.get(url, headers=headers, params=params) as r:
         if r.status != 200:
             LOGGER.warning("can't get repos list "
                            "on %s (status: %i)" % (r.url, r.status))
@@ -525,7 +531,10 @@ async def github_get_open_prs_by_sha(client_session, owner, repo, sha,
 
     """
     url = "%s/repos/%s/%s/pulls" % (GITHUB_ROOT, owner, repo)
-    params = {"state": state}
+    params = {
+        "state": state,
+        "per_page": "100"
+    }
     async with client_session.get(url, params=params) as r:
         if r.status != 200:
             LOGGER.warning("can't get pr list "
