@@ -445,7 +445,6 @@ async def github_get_repo_topics(client_session, owner, repo):
     headers = {
         "accept": "application/vnd.github.mercy-preview+json"
     }
-    LOGGER.warning("url = %s" % url)
     async with client_session.get(url, headers=headers) as r:
         if r.status != 200:
             LOGGER.warning("can't get repo "
